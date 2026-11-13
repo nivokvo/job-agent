@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My agent applies to jobs for me</title>
+<meta name="description" content="An 18-year-old math student in Minsk built an agent that applies to jobs for him. Live numbers from its logs, updated every hour.">
+<meta property="og:title" content="My agent has applied to jobs for me. Offers so far: 0">
+<meta property="og:description" content="Live numbers from a job-hunting agent built by a math student in Belarus, updated every hour. Including the part where Claude's judgment did worse than a coin flip.">
+<meta property="og:image" content="https://nivokvo.github.io/job-agent/og.png">
+<meta property="og:url" content="https://nivokvo.github.io/job-agent/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<style>
+:root{color-scheme:light;--bg:#f7f6f2;--s1:#fdfcf9;--line:rgba(20,20,18,.1);--t1:#141412;--t2:#4f4e49;--t3:#8a8982;--acc:#2a78d6;--rej:#e34948;--wait:#8a8982;--unk:#dcdbd5;--live:#0e8a5f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--s1:#1a1a19;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--s1:#1a1a19;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t1);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:760px;margin:0 auto;padding:56px 16px 96px}
+h1,h2{font-family:Newsreader,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+h1{font-size:44px;line-height:1.1;margin:0 0 20px}
+h2{font-size:28px;line-height:1.2;margin:56px 0 12px}
+h3{font-size:15px;font-weight:500;margin:0 0 8px;color:var(--t2)}
+p{margin:0 0 16px;color:var(--t2)}
+p b{color:var(--t1);font-weight:500}
+a{color:var(--t1);text-underline-offset:3px}
+.num,.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--t3);margin-bottom:24px}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--live)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:14px;background:var(--s1);margin:32px 0 8px}
+.stats>div{padding:16px;border-left:1px solid var(--line)}
+.stats>div:first-child{border-left:0}
+.stats .v{font-size:28px;line-height:1.2}
+.stats .l{font-size:13px;color:var(--t3)}
+.stats .acc .v{color:var(--acc)}
+figure{margin:24px 0;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:20px}
+figcaption{font-size:13px;color:var(--t3);margin-top:12px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{fill:var(--t3);font:11px ui-monospace,"SF Mono",Menlo,monospace}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--t2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-weight:400;color:var(--t3);text-align:right;padding:0 8px 6px 0;font-size:12px}
+th:first-child,td:first-child{text-align:left}
+td{padding:8px 8px 8px 0;border-top:1px solid var(--line)}
+td.n{text-align:right;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{display:flex;gap:2px;height:8px;min-width:60px}
+.bar i{display:block;height:8px;border-radius:2px}
+ol.how{padding-left:20px;color:var(--t2)}
+ol.how li{margin:6px 0}
+.end{margin-top:56px;padding:24px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}
+.end h2{margin-top:0}
+.contacts{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:15px}
+footer{margin-top:32px;font-size:13px;color:var(--t3)}
+@media (max-width:640px){h1{font-size:34px}.stats{grid-template-columns:repeat(2,1fr)}.stats>div{border-left:0;border-top:1px solid var(--line)}.stats>div:nth-child(-n+2){border-top:0}.stats>div:nth-child(even){border-left:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<main>
+<div class="live"><i></i><span id="ago">loading the agent's logs</span></div>
+<h1>My agent has applied to <span class="num" data-k="applied">…</span> jobs for me. Offers so far: 0.</h1>
+<p>I'm Gleb, 18, a second-year math student in Minsk, Belarus. Since <span data-k="started">October</span>, a Python daemon on my MacBook has been looking for a job on my behalf. It reads every new posting, asks Claude whether it fits me, writes a cover letter, applies, and answers recruiters when the question is simple. When someone invites me to an interview, it stops and hands the chat over to me.</p>
+<p>The numbers on this page come straight from its logs and refresh every hour. Company names are left out.</p>
+
+<div class="stats">
+<div><div class="v num" data-k="applied">…</div><div class="l">applied</div></div>
+<div><div class="v num" data-k="opened">…</div><div class="l">opened by employer</div></div>
+<div><div class="v num" data-k="rejected">…</div><div class="l">rejected</div></div>
+<div class="acc"><div class="v num" data-k="good">…</div><div class="l">conversations or invites</div></div>
+<div><div class="v num">0</div><div class="l">offers</div></div>
+</div>
+
+<figure><div id="days"></div>
+<div class="legend"><span><i style="background:var(--acc)"></i>conversation or invite</span><span><i style="background:var(--rej)"></i>rejected</span><span><i style="background:var(--wait)"></i>no answer yet</span><span><i style="background:var(--unk)"></i>outcome not recorded</span></div>
+<figcaption>Applications per day, colored by how each one has ended so far</figcaption></figure>
+
+<h2>Claude could not tell who would call me back</h2>
+<p>Every posting gets a fit score from 0 to 10 from Claude Opus. I assumed a higher score would mean more invitations. On the <span class="num" data-k="n">…</span> applications with a clear outcome, the score ranks them at <b class="num" data-k="opus">…</b> AUC. A coin flip gets 0.5.</p>
+<p>So I wrote a small logistic regression with 16 features (experience required, role type, how many people already applied) and priors I set by hand. In cross-validation it gets <b class="num" data-k="cv">…</b>. That sounds better than it is. The hand-set priors alone get <b class="num" data-k="prior">…</b>, and with only <span class="num" data-k="pos">…</span> positive outcomes there is not much for the model to learn yet. The real test is ahead: predictions are written down at the moment of applying and checked when the answer arrives.</p>
+<p>My best guess at why: the score measures whether I would like the job. Employers are answering a different question.</p>
+<figure><div id="auc"></div><figcaption>AUC after each retrain. Above 0.5 means the ranking is better than chance</figcaption></figure>
+
+<h2>Employers read the letters and still pass</h2>
+<p><b class="num" data-k="openedPct">…</b> of applications were opened. Of the opened ones, <b class="num" data-k="goodOfOpened">…</b> turned into a conversation or an invitation.</p>
+<figure><table id="funnel"></table></figure>
+
+<h2>The jobs I want are the ones that never answer</h2>
+<p>I want to work in ML. Software and ML engineering postings: <b data-k="devLine">…</b>. Content and copywriting jobs, which I applied to as a fallback, invite me far more often. Numbers are small, so each row shows a 95% interval for the real rate.</p>
+<figure><table id="roles"></table></figure>
+
+<h2>"Remote" usually means remote inside one country</h2>
+<p>On LinkedIn the agent has scored <b class="num" data-k="liScored">…</b> remote postings for juniors. <b class="num" data-k="liFit">…</b> passed. Most of the rest wanted an office, a US work permit or years of experience.</p>
+<figure><table id="li"></table></figure>
+
+<h2>How it works</h2>
+<ol class="how">
+<li>A launchd daemon polls a local job board every minute on weekdays, and LinkedIn, Himalayas, Remote OK and the Hacker News hiring thread every few hours.</li>
+<li>A cheap model filters first. Claude Opus scores the survivors against one rules file and writes the cover letter.</li>
+<li>A headless browser applies. On LinkedIn, Claude Sonnet fills the Easy Apply form page by page and stops if a question needs a fact it doesn't have.</li>
+<li>Recruiter replies go through Opus and a second model that checks for invented facts. The agent sends at most 3 messages per chat on its own. An interview, a test task or an offer goes straight to me in Telegram.</li>
+<li>When the laptop sleeps, a Cloudflare Worker and GitHub Actions keep going. Captchas are never solved: the agent backs off and tries later.</li>
+</ol>
+<p>So far it has sent <b class="num" data-k="autos">…</b> recruiter replies on its own and handed <b class="num" data-k="handoff">…</b> chats over to me.</p>
+
+<div class="end">
+<h2>How I'd like this to end</h2>
+<p>I'd like to switch it off. If you're hiring a junior engineer for ML, LLM or agent work, remote from Belarus, part-time or full-time, write to me. You'd get the person who built this, and the agent goes to sleep.</p>
+<div class="contacts"><a href="mailto:nivokvo@icloud.com">nivokvo@icloud.com</a><a href="https://t.me/nivokvo">Telegram @nivokvo</a><a href="https://github.com/nivokvo">GitHub</a></div>
+</div>
+<footer>Updated <span id="at">…</span>. Built with Python, Claude and a lot of rejected applications.</footer>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const pct = (k, n) => n ? Math.round(100 * k / n) + "%" : "n/a";
+function draw(D) {
+  const k = D.kpi;
+  const vals = {applied: k.applied, opened: k.opened, rejected: k.rejected, good: k.good, opus: D.model.opus, cv: D.model.cv, prior: D.model.prior, pos: D.model.pos, n: D.model.n,
+    openedPct: pct(k.opened, k.applied), goodOfOpened: pct(k.good, k.opened), liScored: D.li.scored, liFit: D.li.fit, autos: D.agent.autos, handoff: D.agent.handoff,
+    started: new Date(D.started).toLocaleDateString("en-GB", {day: "numeric", month: "long"})};
+  const dev = D.roles.find((r) => r.key === "dev");
+  vals.devLine = dev ? `${dev.n} applications, ${dev.good} invitations, ${dev.rej} rejections, the rest silent` : "no data yet";
+  document.querySelectorAll("[data-k]").forEach((el) => { if (vals[el.dataset.k] != null) el.textContent = vals[el.dataset.k]; });
+  const m = Math.round((Date.now() / 1000 - D.last) / 60);
+  $("ago").textContent = "Agent last active " + (m < 2 ? "just now" : m < 120 ? m + " min ago" : Math.round(m / 60) + " h ago");
+  $("at").textContent = new Date(D.at * 1000).toUTCString().slice(5, 22) + " UTC";
+  // по дням
+  const W = 720, H = 220, L = 26, B = 22, T = 6, n = D.days.length, top = Math.ceil(Math.max(5, ...D.days.map((d) => d.good + d.rej + d.wait + d.unk)) / 5) * 5;
+  const bw = (W - L) / n, y = (v) => T + (H - T - B) * (1 - v / top);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Applications per day">`;
+  for (let g = 0; g <= top; g += 5) s += `<line x1="${L}" x2="${W}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(g) + 4}" text-anchor="end">${g}</text>`;
+  D.days.forEach((d, i) => { let a = 0; const x = L + i * bw + 1, w = Math.max(2, bw - 3);
+    [["rej", d.rej], ["acc", d.good], ["wait", d.wait], ["unk", d.unk]].forEach(([c, v]) => { if (!v) return; const y1 = y(a + v); s += `<rect x="${x}" y="${y1 + 1}" width="${w}" height="${Math.max(1, y(a) - y1 - 2)}" rx="2" fill="var(--${c})"><title>${d.day}: ${v}</title></rect>`; a += v; });
+    if (i % 7 === 0) s += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${new Date(d.day).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}</text>`; });
+  $("days").innerHTML = s + "</svg>";
+  // AUC
+  const hs = D.model.hist;
+  if (hs.length > 1) {
+    const R = 96, x = (i) => L + (W - L - R) * i / (hs.length - 1), ya = (v) => T + (H - T - B) * (1 - (v - 0.2) / 0.7);
+    let a = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AUC of Claude's score and the small model">`;
+    [0.3, 0.5, 0.7, 0.9].forEach((g) => a += `<line x1="${L}" x2="${W - R}" y1="${ya(g)}" y2="${ya(g)}" stroke="${g === 0.5 ? "var(--t3)" : "var(--line)"}" ${g === 0.5 ? 'stroke-dasharray="4 4"' : ""}/><text x="${L - 6}" y="${ya(g) + 4}" text-anchor="end">${g}</text>`);
+    a += `<text x="${W - R + 8}" y="${ya(0.5) + 4}">coin flip</text>`;
+    [["opus", "var(--wait)", "Claude"], ["cv", "var(--acc)", "small model"]].forEach(([key, c, name]) => { const l = hs[hs.length - 1];
+      a += `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" points="${hs.map((h, i) => x(i) + "," + ya(h[key])).join(" ")}"/><circle cx="${x(hs.length - 1)}" cy="${ya(l[key])}" r="4" fill="${c}" stroke="var(--s1)" stroke-width="2"/><text x="${W - R + 8}" y="${ya(l[key]) + 4}" style="fill:var(--t1)">${name} ${l[key]}</text>`; });
+    $("auc").innerHTML = a + "</svg>";
+  }
+  // воронка
+  const F = D.funnel, base = F[2][1];
+  $("funnel").innerHTML = F.map(([l, v], i) => `<tr><td>${l}</td><td class="n">${v}</td><td class="n" style="color:var(--t3)">${i ? pct(v, F[i - 1][1]) : ""}</td><td style="width:36%"><div class="bar"><i style="width:${i < 2 ? 100 : Math.max(v ? 1.5 : 0, 100 * v / base)}%;background:${i < 2 ? "var(--unk)" : "var(--acc)"}"></i></div></td></tr>`).join("");
+  $("roles").innerHTML = `<tr><th>Role type</th><th>applied</th><th>invited</th><th>95% interval</th><th></th></tr>` + D.roles.map((r) => `<tr><td>${r.label}</td><td class="n">${r.n}</td><td class="n" style="color:var(--acc)">${r.good}</td><td class="n" style="color:var(--t3)">${r.known ? Math.round(r.ci[0] * 100) + "–" + Math.round(r.ci[1] * 100) + "%" : "n/a"}</td><td style="width:26%"><div class="bar">${[["rej", r.rej], ["acc", r.good], ["wait", r.wait], ["unk", r.unk]].filter((q) => q[1]).map(([c, v]) => `<i style="flex:${v};background:var(--${c})"></i>`).join("")}</div></td></tr>`).join("");
+  $("li").innerHTML = `<tr><th>Why a LinkedIn posting was skipped</th><th>postings</th></tr>` + D.li.why.map(([w, v]) => `<tr><td>${w}</td><td class="n">${v}</td></tr>`).join("");
+}
+fetch("data.json?" + Date.now()).then((r) => r.json()).then(draw).catch(() => { $("ago").textContent = "Could not load the logs"; });
+</script>
+</body>
+</html>
