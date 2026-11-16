@@ -13,17 +13,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <style>
-:root{color-scheme:light;--bg:#f7f6f2;--s1:#fdfcf9;--line:rgba(20,20,18,.1);--t1:#141412;--t2:#4f4e49;--t3:#8a8982;--acc:#2a78d6;--rej:#e34948;--wait:#8a8982;--unk:#dcdbd5;--live:#0e8a5f}
+:root{color-scheme:light;--bg:#f7f6f2;--s1:#fdfcf9;--line:rgba(20,20,18,.1);--t1:#141412;--t2:#4f4e49;--t3:#6b6a64;--acc:#236bc4;--rej:#e34948;--wait:#8a8982;--unk:#dcdbd5;--live:#0e8a5f}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--s1:#1a1a19;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--s1:#1a1a19;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--t1);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 main{max-width:760px;margin:0 auto;padding:56px 16px 96px}
-h1,h2{font-family:Newsreader,Georgia,serif;font-weight:500;letter-spacing:-.01em}
+h1,h2{font-family:Newsreader,Georgia,serif;font-weight:500;letter-spacing:-.01em;text-wrap:balance}
 h1{font-size:44px;line-height:1.1;margin:0 0 20px}
 h2{font-size:28px;line-height:1.2;margin:56px 0 12px}
 h3{font-size:15px;font-weight:500;margin:0 0 8px;color:var(--t2)}
-p{margin:0 0 16px;color:var(--t2)}
+p{margin:0 0 16px;color:var(--t2);max-width:56ch;text-wrap:pretty}
 p b{color:var(--t1);font-weight:500}
 a{color:var(--t1);text-underline-offset:3px}
 .num,.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
@@ -48,7 +48,7 @@ td{padding:8px 8px 8px 0;border-top:1px solid var(--line)}
 td.n{text-align:right;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
 .bar{display:flex;gap:2px;height:8px;min-width:60px}
 .bar i{display:block;height:8px;border-radius:2px}
-ol.how{padding-left:20px;color:var(--t2)}
+ol.how{padding-left:20px;color:var(--t2);max-width:56ch}
 ol.how li{margin:8px 0}
 .end{margin-top:56px;padding:24px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}
 .end h2{margin-top:0}
@@ -157,7 +157,7 @@ function draw(D) {
 }
 let last, rt;
 addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => last && draw(last), 150); });
-fetch("data.json?" + Date.now()).then((r) => r.json()).then((D) => draw(last = D)).catch(() => { $("ago").textContent = "Could not load the logs"; });
+fetch("data.json?" + Date.now()).then((r) => r.json()).then((D) => draw(last = D)).catch(() => { $("ago").textContent = "Could not load the logs"; document.querySelector(".live i").style.background = "var(--t3)"; });
 </script>
 </body>
 </html>
