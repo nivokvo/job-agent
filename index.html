@@ -13,88 +13,217 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <style>
-:root{color-scheme:light;--bg:#f7f6f2;--s1:#fdfcf9;--line:rgba(20,20,18,.1);--t1:#141412;--t2:#4f4e49;--t3:#6b6a64;--acc:#236bc4;--rej:#e34948;--wait:#8a8982;--unk:#dcdbd5;--live:#0e8a5f}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--s1:#1a1a19;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}}
-:root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--s1:#1a1a19;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}
+:root{color-scheme:light;--bg:#f7f6f2;--s1:#fdfcf9;--s2:#efede7;--line:rgba(20,20,18,.1);--t1:#141412;--t2:#4f4e49;--t3:#6b6a64;--acc:#236bc4;--rej:#e34948;--wait:#8a8982;--unk:#dcdbd5;--live:#0e8a5f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121211;--s1:#1a1a19;--s2:#232321;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121211;--s1:#1a1a19;--s2:#232321;--line:rgba(240,239,236,.1);--t1:#f0efec;--t2:#c3c2b7;--t3:#8a8982;--acc:#3987e5;--rej:#e66767;--wait:#8a8982;--unk:#3a3a37;--live:#2bb785}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--t1);font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-main{max-width:760px;margin:0 auto;padding:56px 16px 96px}
-h1,h2{font-family:Newsreader,Georgia,serif;font-weight:500;letter-spacing:-.01em;text-wrap:balance}
-h1{font-size:44px;line-height:1.1;margin:0 0 20px}
-h2{font-size:28px;line-height:1.2;margin:56px 0 12px}
-h3{font-size:15px;font-weight:500;margin:0 0 8px;color:var(--t2)}
-p{margin:0 0 16px;color:var(--t2);max-width:56ch;text-wrap:pretty}
+body{margin:0;background:var(--bg);color:var(--t1);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+/* цифры как у Apple: SF Pro Display на маке, без перечёркнутого нуля */
+.num{font-variant-numeric:tabular-nums}
+/* крупные цифры тем же Newsreader, что и заголовки */
+.stats .v,.big{font-family:Newsreader,Georgia,serif;font-weight:500;font-variant-numeric:lining-nums tabular-nums;letter-spacing:-.02em}
+h1,h2{font-family:Newsreader,Georgia,serif;font-weight:500;text-wrap:balance}
+h1{font-size:64px;line-height:1.04;letter-spacing:-.03em;margin:0 0 24px;max-width:18ch}
+h1 .num{font-family:inherit;font-variant-numeric:lining-nums tabular-nums}
+h2{font-size:32px;line-height:1.15;letter-spacing:-.02em;margin:0 0 16px}
+p,ol.how li{font:19px/1.55 Newsreader,Georgia,serif}
+p{margin:0 0 16px;color:var(--t2);max-width:58ch;text-wrap:pretty}
+p b{font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:17px}
+.sub{font-family:inherit}
 p b{color:var(--t1);font-weight:500}
 a{color:var(--t1);text-underline-offset:3px}
-.num,.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
-.live{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--t3);margin-bottom:24px}
-.live i{width:8px;height:8px;border-radius:50%;background:var(--live)}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:14px;background:var(--s1);margin:32px 0 8px}
-.stats>div{padding:16px;border-left:1px solid var(--line)}
-.stats>div:first-child{border-left:0}
-.stats .v{font-size:28px;line-height:1.2}
-.stats .l{font-size:13px;color:var(--t3)}
+
+/* полоска сверху: агент жив */
+.strip{position:sticky;top:0;z-index:2;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);font-size:13px;color:var(--t3)}
+.strip>div{max-width:1120px;margin:0 auto;padding:8px 24px;display:flex;gap:8px 24px;flex-wrap:wrap;align-items:center}
+.strip .on{display:inline-flex;align-items:center;gap:8px;color:var(--t1);font-weight:500}
+.strip .on i{width:8px;height:8px;border-radius:50%;background:var(--live)}
+.strip .num{color:var(--t2)}
+
+main{max-width:1120px;margin:0 auto;padding:64px 24px 96px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:64px;align-items:start;margin-bottom:48px}
+.me{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:24px;font-size:14px;color:var(--t2)}
+.me .who{display:flex;gap:16px;align-items:center;margin-bottom:20px}
+.me img{width:72px;height:72px;border-radius:50%;object-fit:cover}
+.me .who b{display:block;color:var(--t1);font-weight:500;font-size:17px}
+.me .who span{color:var(--t3)}
+.me dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;padding:16px 0;border-top:1px solid var(--line)}
+.me dt{color:var(--t3)}.me dd{margin:0;color:var(--t1)}
+.me .today{padding-top:16px;border-top:1px solid var(--line);color:var(--t3)}
+.me .today div{display:flex;gap:24px;margin-top:8px}
+.me .today .big{display:block;font-size:32px;line-height:1.1;color:var(--t1)}
+.me .contacts{margin-top:20px}
+
+.stats{display:grid;grid-template-columns:2fr repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 0 48px}
+.stats>div{padding:24px 24px 24px 0}
+.stats>div+div{padding-left:24px;border-left:1px solid var(--line)}
+.stats .v{font-size:56px;line-height:1}
+.stats>div:first-child .v{font-size:104px}
+.stats .l{font-size:14px;color:var(--t3);margin-top:8px}
 .stats .acc .v{color:var(--acc)}
-figure{margin:24px 0;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:20px}
-figcaption{font-size:13px;color:var(--t3);margin-top:12px}
+
+section{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;margin-top:96px;align-items:start}
+section>.txt{position:sticky;top:72px}
+section.wide{display:block}
+section.wide>.txt{position:static;max-width:720px}
+figure{margin:0;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:24px}
+figcaption{font-size:13px;color:var(--t3);margin-top:16px}
 svg{display:block;width:100%;height:auto;overflow:visible}
-svg text{fill:var(--t3);font:11px ui-monospace,"SF Mono",Menlo,monospace}
-.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--t2);margin-top:8px}
+svg text{fill:var(--t3);font:12px -apple-system,BlinkMacSystemFont,sans-serif;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--t2);margin-top:12px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:-1px}
-table{border-collapse:collapse;width:100%;font-size:14px}
-th{font-weight:400;color:var(--t3);text-align:right;padding:0 8px 8px 0;font-size:12px}
-th:first-child,td:first-child{text-align:left}
-td{padding:8px 8px 8px 0;border-top:1px solid var(--line)}
-td.n{text-align:right;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
-.bar{display:flex;gap:2px;height:8px;min-width:60px}
-.bar i{display:block;height:8px;border-radius:2px}
-ol.how{padding-left:20px;color:var(--t2);max-width:56ch}
-ol.how li{margin:8px 0}
-.end{margin-top:56px;padding:24px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}
-.end h2{margin-top:0}
-.contacts{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:15px}
+
+/* линейка AUC */
+.readout{display:flex;flex-wrap:wrap;gap:8px 32px;align-items:flex-end;margin-bottom:16px;font-size:13px;color:var(--t3)}
+.readout .when{flex-basis:100%;color:var(--t2);font-size:14px}
+.readout .big{display:block;font-size:36px;line-height:1.1}
+.readout i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+.scrub svg{cursor:crosshair;touch-action:pan-y}
+.scrub svg:focus-visible{outline:2px solid var(--acc);outline-offset:4px;border-radius:4px}
+.col{transition:opacity .15s ease}
+.sub{font-size:13px;color:var(--t3);margin:0 0 8px}
+
+/* строки «полоса со значением» */
+.rows{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr) 64px;gap:16px;align-items:center;font-size:14px}
+.row .n{text-align:right;color:var(--t2)}
+.row .n small{color:var(--t3);font-size:12px;margin-left:4px}
+.track{height:12px;border-radius:4px;background:var(--s2);overflow:hidden;display:flex;gap:2px}
+.track i{display:block;height:100%}
+.row.hi{color:var(--t1);font-weight:500}
+
+/* роли */
+.role{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center;padding:16px 0;border-top:1px solid var(--line);font-size:14px}
+.role:first-of-type{border-top:0}
+.role .what small{display:block;color:var(--t3);font-size:13px}
+.role.head{padding:0 0 8px;color:var(--t3);font-size:12px;border:0}
+.rate{display:flex;gap:16px;align-items:center}
+.rate .big{font-size:32px;line-height:1;min-width:2.6ch}
+.rate span{color:var(--t2)}
+.rate small{display:block;color:var(--t3);font-size:13px}
+
+ol.how{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:0}
+ol.how li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;padding:16px 0;border-top:1px solid var(--line);color:var(--t2)}
+ol.how li:first-child{border-top:0;padding-top:0}
+ol.how li::before{content:counter(s);font:500 15px -apple-system,BlinkMacSystemFont,sans-serif;color:var(--t3)}
+
+.end{margin-top:96px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:48px;align-items:center;padding:48px;border-radius:20px;background:var(--s1);border:1px solid var(--line)}
+.end h2{font-size:44px;margin-bottom:16px}
+.contacts{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.contacts a{font-size:15px;text-decoration:none;padding:8px 16px;border-radius:10px;border:1px solid var(--line);background:var(--bg);transition:background-color .15s ease}
+.contacts a:first-child{background:var(--t1);color:var(--bg);border-color:var(--t1)}
+.contacts a:hover{background:var(--s2)}
+.contacts a:first-child:hover{background:var(--t2)}
+.contacts a:focus-visible,.switch:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.panel{text-align:center;padding:24px;border-left:1px solid var(--line)}
+.switch{width:96px;height:56px;border-radius:28px;border:0;background:var(--live);position:relative;cursor:pointer;transition:background-color .25s cubic-bezier(.2,.8,.2,1)}
+.switch::after{content:"";position:absolute;top:4px;left:44px;width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.switch[aria-checked="false"]{background:var(--unk)}
+.switch[aria-checked="false"]::after{transform:translateX(-40px)}
+.panel b{display:block;margin-top:16px;font-weight:500}
+.panel>span{display:block;font-size:13px;color:var(--t3);margin-top:4px}
 footer{margin-top:32px;font-size:13px;color:var(--t3)}
-@media (max-width:640px){h1{font-size:34px}.stats{grid-template-columns:repeat(2,1fr)}.stats>div{border-left:0;border-top:1px solid var(--line)}.stats>div:nth-child(-n+2){border-top:0}.stats>div:nth-child(even){border-left:1px solid var(--line)}.stats>div:last-child{grid-column:span 2}}
+
+@media (max-width:900px){
+  .hero,section,.end{grid-template-columns:1fr;gap:24px}
+  section{margin-top:72px}
+  section>.txt{position:static}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats>div{padding:16px 0;border-top:1px solid var(--line)}
+  .stats>div+div{padding-left:0;border-left:0}
+  .stats>div:nth-child(odd):not(:first-child){padding-left:16px;border-left:1px solid var(--line)}
+  .stats>div:first-child{grid-column:span 2;border-top:0}
+  .stats .v{font-size:36px}.stats>div:first-child .v{font-size:64px}
+  .end{padding:24px}.panel{border-left:0;border-top:1px solid var(--line)}
+}
+@media (max-width:640px){
+  main{padding:40px 16px 72px}.strip>div{padding:8px 16px;gap:4px 16px}.strip .x{display:none}
+  h1{font-size:40px}h2{font-size:28px}.end h2{font-size:32px}
+  .role{grid-template-columns:1fr 1fr;gap:8px 16px}.role .what{grid-column:span 2}.role.head .what{display:none}
+  .row{grid-template-columns:minmax(0,120px) minmax(0,1fr) 48px;gap:12px}
+}
 </style>
 </head>
 <body>
+<div class="strip"><div>
+<span class="on"><i></i>Live: the agent is running right now</span>
+<span id="ago">loading its logs</span>
+<span class="x"><span class="num" data-k="scoredAll">…</span> postings read</span>
+<span class="x"><span class="num" data-k="handoff">…</span> chats handed to me</span>
+<span class="x">numbers refresh hourly</span>
+</div></div>
 <main>
-<div class="live"><i></i><span id="ago">loading the agent's logs</span></div>
+<div class="hero">
+<div>
 <h1>My agent has applied to <span class="num" data-k="applied">…</span> jobs for me. Offers so far: 0</h1>
 <p>I'm Gleb, 18, a second-year math student in Minsk, Belarus. Since <span data-k="started">October</span>, a Python daemon on my MacBook has been looking for a job on my behalf. It reads every new posting, asks Claude whether it fits me, writes a cover letter, applies, and answers recruiters when the question is simple. When someone invites me to an interview, it stops and hands the chat over to me.</p>
 <p>The numbers on this page come straight from its logs and refresh every hour. Company names are left out.</p>
+</div>
+<aside class="me">
+<div class="who"><img src="avatar.jpg" alt="Gleb"><div><b>Gleb Novikov</b><span>18, Minsk, Belarus</span></div></div>
+<dl><dt>Looking for</dt><dd>Junior ML, LLM or agent engineer</dd><dt>Format</dt><dd>Remote, part-time or full-time</dd><dt>Studying</dt><dd>Math, BSU, 2nd year</dd></dl>
+<div class="today" id="today"></div>
+<div class="contacts"><a href="mailto:nivokvo@icloud.com">Email me</a><a href="https://t.me/nivokvo">Telegram</a></div>
+</aside>
+</div>
 
 <div class="stats">
-<div><div class="v num" data-k="applied">…</div><div class="l">applied</div></div>
+<div><div class="v num" data-k="applied">…</div><div class="l">applications sent</div></div>
 <div><div class="v num" data-k="opened">…</div><div class="l">opened by employer</div></div>
 <div><div class="v num" data-k="rejected">…</div><div class="l">rejected</div></div>
 <div class="acc"><div class="v num" data-k="good">…</div><div class="l">conversations or invites</div></div>
 <div><div class="v num">0</div><div class="l">offers</div></div>
 </div>
 
-<figure><div id="days"></div>
+<figure><div class="readout" id="dayinfo"></div><div id="days" class="scrub"></div>
 <div class="legend"><span><i style="background:var(--acc)"></i>conversation or invite</span><span><i style="background:var(--rej)"></i>rejected</span><span><i style="background:var(--wait)"></i>no answer yet</span><span><i style="background:var(--unk)"></i>outcome not recorded</span></div>
-<figcaption>Applications per day, colored by how each one has ended so far</figcaption></figure>
+<figcaption>Applications per day, colored by how each one has ended so far. Point at a day to see it, move away to see all of them</figcaption></figure>
 
+<section>
+<div class="txt">
 <h2>Claude could not tell who would call me back</h2>
 <p>Every posting gets a fit score from 0 to 10 from Claude Opus. I assumed a higher score would mean more invitations. On the <span class="num" data-k="n">…</span> applications with a clear outcome, the score ranks them at <b class="num" data-k="opus">…</b> AUC. A coin flip gets 0.5.</p>
-<p>So I wrote a small logistic regression with 16 features (experience required, role type, how many people already applied) and priors I set by hand. For a week it held at about 0.70 in cross-validation. Then an ML engineer role and an AI agent developer role wrote back, two postings the model had ranked lowest of all, because engineering jobs had never answered before. Now it gets <b class="num" data-k="cv">…</b>, and the hand-set priors alone get <b class="num" data-k="prior">…</b>. With <span class="num" data-k="pos">…</span> positive outcomes, one reply moves these numbers a lot. The real test is ahead: predictions are written down at the moment of applying and checked when the answer arrives.</p>
+<p>So I wrote a small logistic regression with 16 features (experience required, role type, how many people already applied) and priors I set by hand. For a week it held at about 0.70 in cross-validation. Then an ML engineer role and an AI agent developer role wrote back, two postings the model had ranked lowest of all, because engineering jobs had never answered before. Now it gets <b class="num" data-k="cv">…</b>, and the hand-set priors alone get <b class="num" data-k="prior">…</b>. With <span class="num" data-k="pos">…</span> positive outcomes, one reply moves these numbers a lot.</p>
 <p>My best guess at why: the score measures whether I would like the job. Employers are answering a different question.</p>
-<figure><div id="auc"></div><figcaption>AUC after each retrain. Above 0.5 means the ranking is better than chance</figcaption></figure>
+</div>
+<figure>
+<div class="readout" id="aucinfo"></div>
+<div id="auc" class="scrub"></div>
+<figcaption>AUC after each retrain. Move across the chart to see any of them</figcaption>
+</figure>
+</section>
 
+<section>
+<div class="txt">
 <h2>Employers read the letters and still pass</h2>
 <p><b class="num" data-k="openedPct">…</b> of applications were opened. Of the opened ones, <b class="num" data-k="goodOfOpened">…</b> turned into a conversation or an invitation.</p>
-<figure><table id="funnel"></table></figure>
+</div>
+<figure><div class="rows" id="funnel"></div><figcaption>Each step as a share of the applications sent</figcaption></figure>
+</section>
 
+<section class="wide">
+<div class="txt">
 <h2>The jobs I want are the ones that never answer</h2>
-<p>I want to work in ML. Software and ML engineering postings: <b data-k="devLine">…</b>. Content and copywriting jobs, which I applied to as a fallback, invite me far more often. Numbers are small, so each row shows a 95% interval for the real rate.</p>
-<figure><table id="roles"></table></figure>
+<p>I want to work in ML. Software and ML engineering postings: <b data-k="devLine">…</b>. Content and copywriting jobs, which I applied to as a fallback, invite me more often. The right column is the share of applications that turned into an invitation. With numbers this small it is rough, so under it is the range the real rate most likely falls in.</p>
+</div>
+<figure>
+<div class="role head"><div class="what">Role type</div><div>What happened to the applications</div><div>Invited</div></div>
+<div id="roles"></div>
+<div class="legend"><span><i style="background:var(--acc)"></i>invited</span><span><i style="background:var(--rej)"></i>rejected</span><span><i style="background:var(--wait)"></i>no answer yet</span><span><i style="background:var(--unk)"></i>outcome not recorded</span></div>
+</figure>
+</section>
 
+<section>
+<div class="txt">
 <h2>"Remote" usually means remote inside one country</h2>
 <p>On LinkedIn the agent has scored <b class="num" data-k="liScored">…</b> remote postings for juniors. <b class="num" data-k="liFit">…</b> passed. Most of the rest wanted an office, a US work permit or years of experience.</p>
-<figure><table id="li"></table></figure>
+</div>
+<figure><div class="rows" id="li"></div><figcaption>LinkedIn remote postings for juniors, by what the agent decided</figcaption></figure>
+</section>
 
-<h2>How it works</h2>
+<section>
+<div class="txt"><h2>How it works</h2>
+<p>So far it has sent <b class="num" data-k="autos">…</b> recruiter replies on its own and handed <b class="num" data-k="handoff">…</b> chats over to me.</p></div>
 <ol class="how">
 <li>A launchd daemon polls a local job board every minute on weekdays, and LinkedIn, Himalayas, Remote OK and the Hacker News hiring thread every few hours.</li>
 <li>A cheap model filters first. Claude Opus scores the survivors against one rules file and writes the cover letter.</li>
@@ -102,62 +231,100 @@ footer{margin-top:32px;font-size:13px;color:var(--t3)}
 <li>Recruiter replies go through Opus and a second model that checks for invented facts. The agent sends at most 3 messages per chat on its own. An interview, a test task or an offer goes straight to me in Telegram.</li>
 <li>When the laptop sleeps, a Cloudflare Worker and GitHub Actions keep going. Captchas are never solved: the agent backs off and tries later.</li>
 </ol>
-<p>So far it has sent <b class="num" data-k="autos">…</b> recruiter replies on its own and handed <b class="num" data-k="handoff">…</b> chats over to me.</p>
+</section>
 
 <div class="end">
+<div>
 <h2>How I'd like this to end</h2>
 <p>I'd like to switch it off. If you're hiring a junior engineer for ML, LLM or agent work, remote from Belarus, part-time or full-time, write to me. You'd get the person who built this, and the agent goes to sleep.</p>
-<div class="contacts"><a href="mailto:nivokvo@icloud.com">nivokvo@icloud.com</a><a href="https://t.me/nivokvo">Telegram @nivokvo</a><a href="https://github.com/nivokvo">GitHub</a></div>
+<div class="contacts"><a href="mailto:nivokvo@icloud.com">Email me</a><a href="https://t.me/nivokvo">Telegram</a><a href="https://github.com/nivokvo">GitHub</a></div>
+</div>
+<div class="panel">
+<button class="switch" role="switch" aria-checked="true" aria-label="Agent switch" id="sw"></button>
+<b id="swt">Agent: on</b><span id="sws">It has been running for <span class="num" data-k="daysOn">…</span> days</span>
+</div>
 </div>
 <footer>Updated <span id="at">…</span>. Built with Python, Claude and a lot of rejected applications.</footer>
 </main>
 <script>
 const $ = (id) => document.getElementById(id);
 const pct = (k, n) => n ? Math.round(100 * k / n) + "%" : "n/a";
+const date = (d) => new Date(d).toLocaleDateString("en-GB", {day: "numeric", month: "short"});
 function draw(D) {
   const k = D.kpi;
-  const vals = {applied: k.applied, opened: k.opened, rejected: k.rejected, good: k.good, opus: D.model.opus, cv: D.model.cv, prior: D.model.prior, pos: D.model.pos, n: D.model.n,
+  const vals = {applied: k.applied, opened: k.opened, rejected: k.rejected, good: k.good, opus: D.model.opus, cv: D.model.cv.toFixed(2), prior: D.model.prior.toFixed(2), pos: D.model.pos, n: D.model.n,
     openedPct: pct(k.opened, k.applied), goodOfOpened: pct(k.good, k.opened), liScored: D.li.scored, liFit: D.li.fit, autos: D.agent.autos, handoff: D.agent.handoff,
+    scoredAll: D.funnel[0][1].toLocaleString("en-US"), daysOn: Math.round((Date.now() - new Date(D.started)) / 864e5),
     started: new Date(D.started).toLocaleDateString("en-GB", {day: "numeric", month: "long"})};
   const dev = D.roles.find((r) => r.key === "dev");
   vals.devLine = dev ? `${dev.n} applications, ${dev.good} invitations, ${dev.rej} rejections, the rest silent` : "no data yet";
   document.querySelectorAll("[data-k]").forEach((el) => { if (vals[el.dataset.k] != null) el.textContent = vals[el.dataset.k]; });
   const m = Math.round((Date.now() / 1000 - D.last) / 60);
-  $("ago").textContent = "Agent last active " + (m < 2 ? "just now" : m < 120 ? m + " min ago" : Math.round(m / 60) + " h ago");
+  $("ago").textContent = "last action " + (m < 2 ? "just now" : m < 120 ? m + " min ago" : Math.round(m / 60) + " h ago");
   $("at").textContent = new Date(D.at * 1000).toUTCString().slice(5, 22) + " UTC";
-  // по дням
-  // рисуем в настоящую ширину: в viewBox 720 на телефоне подписи сжимались до 5px
-  const W = Math.max(300, Math.round($("days").clientWidth)), H = W < 500 ? 180 : 220, L = 26, B = 22, T = 6, n = D.days.length, top = Math.ceil((Math.max(4, ...D.days.map((d) => d.good + d.rej + d.wait + d.unk)) + 1) / 5) * 5;
+  // по дням: рисуем в настоящую ширину, иначе на телефоне подписи сжимаются
+  const W = Math.max(300, Math.round($("days").clientWidth)), H = W < 500 ? 180 : 260, L = 28, B = 24, T = 6, n = D.days.length, tot = (d) => d.good + d.rej + d.wait + d.unk, top = Math.ceil((Math.max(4, ...D.days.map(tot)) + 1) / 5) * 5;
   const bw = (W - L) / n, y = (v) => T + (H - T - B) * (1 - v / top);
-  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Applications per day">`;
-  for (let g = 0; g <= top; g += 5) s += `<line x1="${L}" x2="${W}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(g) + 4}" text-anchor="end">${g}</text>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-label="Applications per day. Use left and right arrows to pick a day">`;
+  for (let g = 0; g <= top; g += 5) s += `<line x1="${L}" x2="${W}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)"/><text x="${L - 8}" y="${y(g) + 4}" text-anchor="end">${g}</text>`;
   D.days.forEach((d, i) => { let a = 0; const x = L + i * bw + 1, w = Math.max(2, bw - 3);
-    [["rej", d.rej], ["acc", d.good], ["wait", d.wait], ["unk", d.unk]].forEach(([c, v]) => { if (!v) return; const y1 = y(a + v); s += `<rect x="${x}" y="${y1 + 1}" width="${w}" height="${Math.max(1, y(a) - y1 - 2)}" rx="2" fill="var(--${c})"><title>${d.day}: ${v}</title></rect>`; a += v; });
-    if (i % (W < 500 ? 14 : 7) === 0) s += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${new Date(d.day).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}</text>`; });
+    s += `<g class="col" data-i="${i}"><rect x="${L + i * bw}" y="${T}" width="${bw}" height="${H - T - B}" fill="transparent"/>`;
+    [["rej", d.rej], ["acc", d.good], ["wait", d.wait], ["unk", d.unk]].forEach(([c, v]) => { if (!v) return; const y1 = y(a + v); s += `<rect x="${x}" y="${y1 + 1}" width="${w}" height="${Math.max(1, y(a) - y1 - 2)}" rx="2" fill="var(--${c})"/>`; a += v; });
+    s += `</g>`;
+    if (i % (W < 500 ? 14 : 7) === 0) s += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${date(d.day)}</text>`; });
   $("days").innerHTML = s + "</svg>";
-  // AUC
+  const dsvg = $("days").firstChild, cols = [...dsvg.querySelectorAll(".col")];
+  // наведён день: показываем его; курсор ушёл: сумма за всё время
+  const all = D.days.reduce((a, d) => ({good: a.good + d.good, rej: a.rej + d.rej, wait: a.wait + d.wait, unk: a.unk + d.unk}), {good: 0, rej: 0, wait: 0, unk: 0});
+  const pickDay = (i) => { day = i == null ? null : Math.max(0, Math.min(n - 1, i)); const d = day == null ? all : D.days[day];
+    cols.forEach((c, j) => c.style.opacity = day == null || j === day ? 1 : 0.35);
+    $("dayinfo").innerHTML = `<div class="when">${day == null ? `All ${n} days, ${date(D.days[0].day)} to ${date(D.days[n - 1].day)}` : new Date(d.day).toLocaleDateString("en-GB", {weekday: "short", day: "numeric", month: "long"})}</div>` +
+      [[tot(d), "applied", "t1"], [d.good, "invited", "acc"], [d.rej, "rejected", "rej"], [d.wait, "no answer yet", "t2"], [d.unk, "not recorded", "t3"]].map(([v, l, c]) => `<div><b class="big" style="color:var(--${c})">${v}</b>${l}</div>`).join(""); };
+  const at = (e) => { const r = dsvg.getBoundingClientRect(); return Math.floor(((e.clientX - r.left) * W / r.width - L) / bw); };
+  dsvg.onpointermove = dsvg.onpointerdown = (e) => pickDay(at(e));
+  dsvg.onkeydown = (e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); pickDay(day == null ? n - 1 : day + (e.key === "ArrowLeft" ? -1 : 1)); } };
+  dsvg.onpointerleave = dsvg.onblur = () => pickDay(null);
+  pickDay(null);
+  const td = D.days[n - 1];
+  $("today").innerHTML = `${td.day === new Date().toISOString().slice(0, 10) ? "Today" : date(td.day)} the agent has<div>${[[tot(td), "applied"], [td.good, "invited"]].map(([v, l]) => `<span><b class="big">${v}</b>${l}</span>`).join("")}</div>`;
+  // AUC по времени: ведёшь по графику, цифры сверху показывают этот момент
   const hs = D.model.hist;
   if (hs.length > 1) {
-    const R = 128, x = (i) => L + (W - L - R) * i / (hs.length - 1), ya = (v) => T + (H - T - 8) * (1 - (v - 0.2) / 0.7);
-    let a = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AUC of Claude's score and the small model">`;
-    [0.3, 0.5, 0.7, 0.9].forEach((g) => a += `<line x1="${L}" x2="${W - R}" y1="${ya(g)}" y2="${ya(g)}" stroke="${g === 0.5 ? "var(--t3)" : "var(--line)"}" ${g === 0.5 ? 'stroke-dasharray="4 4"' : ""}/><text x="${L - 6}" y="${ya(g) + 4}" text-anchor="end">${g}</text>`);
-    a += `<text x="${L + 6}" y="${ya(0.5) - 6}">coin flip</text>`;
-    const l = hs[hs.length - 1], S = [["opus", "var(--wait)", "Claude"], ["cv", "var(--acc)", "small model"]];
-    const ly = S.map(([key]) => ya(l[key])), [lo, hi] = ly[0] > ly[1] ? [0, 1] : [1, 0];
-    if (ly[lo] - ly[hi] < 16) { const mid = (ly[lo] + ly[hi]) / 2; ly[lo] = mid + 8; ly[hi] = mid - 8; }  // близкие значения: подписи не налезают
-    S.forEach(([key, c, name], j) => {
-      a += `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" points="${hs.map((h, i) => x(i) + "," + ya(h[key])).join(" ")}"/><circle cx="${x(hs.length - 1)}" cy="${ya(l[key])}" r="4" fill="${c}" stroke="var(--s1)" stroke-width="2"/><text x="${W - R + 10}" y="${ly[j] + 4}" style="fill:var(--t1)">${name} ${l[key]}</text>`; });
+    const AW = Math.max(280, Math.round($("auc").clientWidth)), AH = 220, R = 8, x = (i) => L + (AW - L - R) * i / (hs.length - 1), ya = (v) => T + (AH - T - B) * (1 - (v - 0.3) / 0.55);
+    let a = `<svg viewBox="0 0 ${AW} ${AH}" role="img" tabindex="0" aria-label="AUC of Claude's score and the small model after each retrain. Use left and right arrows to step through retrains">`;
+    a += `<rect x="${L}" y="${ya(0.5)}" width="${AW - L - R}" height="${ya(0.3) - ya(0.5)}" fill="var(--s2)" opacity=".6"/><text x="${L + 8}" y="${ya(0.3) - 8}">worse than a coin flip</text>`;
+    [0.3, 0.5, 0.7].forEach((g) => a += `<line x1="${L}" x2="${AW - R}" y1="${ya(g)}" y2="${ya(g)}" stroke="${g === 0.5 ? "var(--t3)" : "var(--line)"}" ${g === 0.5 ? 'stroke-dasharray="3 3"' : ""}/><text x="${L - 8}" y="${ya(g) + 4}" text-anchor="end">${g}</text>`);
+    [0, hs.length - 1].forEach((i) => a += `<text x="${x(i)}" y="${AH - 4}" text-anchor="${i ? "end" : "start"}">${date(hs[i].at)}</text>`);
+    const drop = hs.findIndex((h, i) => i && hs[i - 1].cv - h.cv > 0.1);
+    if (drop > 0) a += `<text x="${x(drop) - 6}" y="${T + 10}" text-anchor="end">ML roles wrote back</text><line x1="${x(drop)}" x2="${x(drop)}" y1="${T}" y2="${AH - B}" stroke="var(--line)"/>`;
+    const S = [["cv", "var(--acc)"], ["opus", "var(--wait)"]];
+    S.forEach(([key, c]) => a += `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" points="${hs.map((h, i) => x(i) + "," + ya(h[key])).join(" ")}"/>`);
+    a += `<line id="cur" y1="${T}" y2="${AH - B}" stroke="var(--t1)" stroke-width="1"/>` + S.map(([key, c]) => `<circle id="c_${key}" r="5" fill="${c}" stroke="var(--s1)" stroke-width="2"/>`).join("");
     $("auc").innerHTML = a + "</svg>";
+    const asvg = $("auc").firstChild;
+    const pickRun = (i) => { run = Math.max(0, Math.min(hs.length - 1, i)); const h = hs[run], cx = x(run);
+      asvg.querySelector("#cur").setAttribute("x1", cx); asvg.querySelector("#cur").setAttribute("x2", cx);
+      S.forEach(([key]) => { const c = asvg.querySelector("#c_" + key); c.setAttribute("cx", cx); c.setAttribute("cy", ya(h[key])); });
+      $("aucinfo").innerHTML = `<div class="when">${run === hs.length - 1 ? "Latest retrain, " : ""}${new Date(h.at).toLocaleString("en-GB", {day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"})}</div>` +
+        [[h.cv, "small model", "acc"], [h.opus, "Claude", "wait"], [0.5, "coin flip", "t3"]].map(([v, l, c]) => `<div><b class="big" style="color:var(--${c === "wait" ? "t1" : c})">${v.toFixed(2)}</b><span><i style="background:var(--${c})"></i>${l}</span></div>`).join(""); };
+    asvg.onpointermove = asvg.onpointerdown = (e) => { const r = asvg.getBoundingClientRect(); pickRun(Math.round(((e.clientX - r.left) * AW / r.width - L) / ((AW - L - R) / (hs.length - 1)))); };
+    asvg.onkeydown = (e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); pickRun(run + (e.key === "ArrowLeft" ? -1 : 1)); } };
+    pickRun(run ?? hs.length - 1);
   }
-  // воронка
+  // воронка: доля от отправленных
   const F = D.funnel, base = F[2][1];
-  $("funnel").innerHTML = F.map(([l, v], i) => `<tr><td>${l}</td><td class="n">${v}</td><td class="n" style="color:var(--t3)">${i ? pct(v, F[i - 1][1]) : ""}</td><td style="width:36%"><div class="bar"><i style="width:${i < 2 ? 100 : Math.max(v ? 1.5 : 0, 100 * v / base)}%;background:${i < 2 ? "var(--unk)" : "var(--acc)"}"></i></div></td></tr>`).join("");
-  $("roles").innerHTML = `<tr><th>Role type</th><th>applied</th><th>invited</th><th>95% interval</th><th></th></tr>` + D.roles.map((r) => `<tr><td>${r.label}</td><td class="n">${r.n}</td><td class="n" style="color:var(--acc)">${r.good}</td><td class="n" style="color:var(--t3)">${r.known ? Math.round(r.ci[0] * 100) + "–" + Math.round(r.ci[1] * 100) + "%" : "n/a"}</td><td style="width:26%"><div class="bar">${[["rej", r.rej], ["acc", r.good], ["wait", r.wait], ["unk", r.unk]].filter((q) => q[1]).map(([c, v]) => `<i style="flex:${v};background:var(--${c})"></i>`).join("")}</div></td></tr>`).join("");
-  $("li").innerHTML = `<tr><th>Why a LinkedIn posting was skipped</th><th>postings</th></tr>` + D.li.why.map(([w, v]) => `<tr><td>${w}</td><td class="n">${v}</td></tr>`).join("");
+  $("funnel").innerHTML = F.slice(2).map(([l, v], i) => `<div class="row${i === 3 ? " hi" : ""}"><div>${l}</div><div class="track"><i style="width:${Math.max(v ? 1.5 : 0, 100 * v / base)}%;background:${i === 3 ? "var(--acc)" : "var(--wait)"}"></i></div><div class="n num">${v}<small>${pct(v, base)}</small></div></div>`).join("");
+  // роли: из чего состоят отклики + доля приглашений и насколько она может врать
+  $("roles").innerHTML = D.roles.map((r) => `<div class="role"><div class="what">${r.label}<small>${r.n} applied</small></div><div class="track">${[["acc", r.good], ["rej", r.rej], ["wait", r.wait], ["unk", r.unk]].filter((q) => q[1]).map(([c, v]) => `<i style="flex:${v};background:var(--${c})" title="${v}"></i>`).join("")}</div><div class="rate">${r.known ? `<b class="big" style="color:var(--${r.good ? "acc" : "t3"})">${pct(r.good, r.known)}</b><span>${r.good} of ${r.known}<small>true rate likely ${Math.round(r.ci[0] * 100)}–${Math.round(r.ci[1] * 100)}%</small></span>` : "n/a"}</div></div>`).join("");
+  // LinkedIn: сколько прошло и почему отсеяны
+  const li = [["Passed: applied or will apply", D.li.fit, 1], ...D.li.why.map(([w, v]) => [w, v, 0])], mx = Math.max(...li.map((q) => q[1]));
+  $("li").innerHTML = li.map(([w, v, hi]) => `<div class="row${hi ? " hi" : ""}"><div>${w}</div><div class="track"><i style="width:${100 * v / mx}%;background:${hi ? "var(--acc)" : "var(--wait)"}"></i></div><div class="n num">${v}</div></div>`).join("");
 }
-let last, rt;
+$("sw").onclick = function () { const on = this.getAttribute("aria-checked") !== "true"; this.setAttribute("aria-checked", on);
+  $("swt").textContent = on ? "Agent: on" : "Agent: off"; $("sws").textContent = on ? "Still running" : "This is what happens when you hire me"; };
+let last, rt, day, run;
 addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => last && draw(last), 150); });
-fetch("data.json?" + Date.now()).then((r) => r.json()).then((D) => draw(last = D)).catch(() => { $("ago").textContent = "Could not load the logs"; document.querySelector(".live i").style.background = "var(--t3)"; });
+fetch("data.json?" + Date.now()).then((r) => r.json()).then((D) => draw(last = D)).catch(() => { $("ago").textContent = "could not load the logs"; document.querySelector(".strip .on i").style.background = "var(--t3)"; });
 </script>
 </body>
 </html>
