@@ -6,7 +6,7 @@
 <title>My agent applies to jobs for me</title>
 <meta name="description" content="An 18-year-old math student in Minsk built an agent that applies to jobs for him. Live numbers from its logs, updated every hour.">
 <meta property="og:title" content="My agent has applied to jobs for me. Offers so far: 0">
-<meta property="og:description" content="Live numbers from a job-hunting agent built by a math student in Belarus, updated every hour. Including the part where Claude's judgment did worse than a coin flip.">
+<meta property="og:description" content="Live numbers from a job-hunting agent built by a math student in Belarus, updated every hour. Including the part where Claude's judgment did no better than a coin flip.">
 <meta property="og:image" content="https://nivokvo.github.io/job-agent/og.png">
 <meta property="og:url" content="https://nivokvo.github.io/job-agent/">
 <meta name="twitter:card" content="summary_large_image">
@@ -40,27 +40,27 @@ figcaption{font-size:13px;color:var(--t3);margin-top:12px}
 svg{display:block;width:100%;height:auto;overflow:visible}
 svg text{fill:var(--t3);font:11px ui-monospace,"SF Mono",Menlo,monospace}
 .legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--t2);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;vertical-align:-1px}
 table{border-collapse:collapse;width:100%;font-size:14px}
-th{font-weight:400;color:var(--t3);text-align:right;padding:0 8px 6px 0;font-size:12px}
+th{font-weight:400;color:var(--t3);text-align:right;padding:0 8px 8px 0;font-size:12px}
 th:first-child,td:first-child{text-align:left}
 td{padding:8px 8px 8px 0;border-top:1px solid var(--line)}
 td.n{text-align:right;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
 .bar{display:flex;gap:2px;height:8px;min-width:60px}
 .bar i{display:block;height:8px;border-radius:2px}
 ol.how{padding-left:20px;color:var(--t2)}
-ol.how li{margin:6px 0}
+ol.how li{margin:8px 0}
 .end{margin-top:56px;padding:24px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}
 .end h2{margin-top:0}
 .contacts{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:15px}
 footer{margin-top:32px;font-size:13px;color:var(--t3)}
-@media (max-width:640px){h1{font-size:34px}.stats{grid-template-columns:repeat(2,1fr)}.stats>div{border-left:0;border-top:1px solid var(--line)}.stats>div:nth-child(-n+2){border-top:0}.stats>div:nth-child(even){border-left:1px solid var(--line)}}
+@media (max-width:640px){h1{font-size:34px}.stats{grid-template-columns:repeat(2,1fr)}.stats>div{border-left:0;border-top:1px solid var(--line)}.stats>div:nth-child(-n+2){border-top:0}.stats>div:nth-child(even){border-left:1px solid var(--line)}.stats>div:last-child{grid-column:span 2}}
 </style>
 </head>
 <body>
 <main>
 <div class="live"><i></i><span id="ago">loading the agent's logs</span></div>
-<h1>My agent has applied to <span class="num" data-k="applied">…</span> jobs for me. Offers so far: 0.</h1>
+<h1>My agent has applied to <span class="num" data-k="applied">…</span> jobs for me. Offers so far: 0</h1>
 <p>I'm Gleb, 18, a second-year math student in Minsk, Belarus. Since <span data-k="started">October</span>, a Python daemon on my MacBook has been looking for a job on my behalf. It reads every new posting, asks Claude whether it fits me, writes a cover letter, applies, and answers recruiters when the question is simple. When someone invites me to an interview, it stops and hands the chat over to me.</p>
 <p>The numbers on this page come straight from its logs and refresh every hour. Company names are left out.</p>
 
@@ -78,7 +78,7 @@ footer{margin-top:32px;font-size:13px;color:var(--t3)}
 
 <h2>Claude could not tell who would call me back</h2>
 <p>Every posting gets a fit score from 0 to 10 from Claude Opus. I assumed a higher score would mean more invitations. On the <span class="num" data-k="n">…</span> applications with a clear outcome, the score ranks them at <b class="num" data-k="opus">…</b> AUC. A coin flip gets 0.5.</p>
-<p>So I wrote a small logistic regression with 16 features (experience required, role type, how many people already applied) and priors I set by hand. In cross-validation it gets <b class="num" data-k="cv">…</b>. That sounds better than it is. The hand-set priors alone get <b class="num" data-k="prior">…</b>, and with only <span class="num" data-k="pos">…</span> positive outcomes there is not much for the model to learn yet. The real test is ahead: predictions are written down at the moment of applying and checked when the answer arrives.</p>
+<p>So I wrote a small logistic regression with 16 features (experience required, role type, how many people already applied) and priors I set by hand. For a week it held at about 0.70 in cross-validation. Then an ML engineer role and an AI agent developer role wrote back, two postings the model had ranked lowest of all, because engineering jobs had never answered before. Now it gets <b class="num" data-k="cv">…</b>, and the hand-set priors alone get <b class="num" data-k="prior">…</b>. With <span class="num" data-k="pos">…</span> positive outcomes, one reply moves these numbers a lot. The real test is ahead: predictions are written down at the moment of applying and checked when the answer arrives.</p>
 <p>My best guess at why: the score measures whether I would like the job. Employers are answering a different question.</p>
 <figure><div id="auc"></div><figcaption>AUC after each retrain. Above 0.5 means the ranking is better than chance</figcaption></figure>
 
@@ -126,23 +126,27 @@ function draw(D) {
   $("ago").textContent = "Agent last active " + (m < 2 ? "just now" : m < 120 ? m + " min ago" : Math.round(m / 60) + " h ago");
   $("at").textContent = new Date(D.at * 1000).toUTCString().slice(5, 22) + " UTC";
   // по дням
-  const W = 720, H = 220, L = 26, B = 22, T = 6, n = D.days.length, top = Math.ceil(Math.max(5, ...D.days.map((d) => d.good + d.rej + d.wait + d.unk)) / 5) * 5;
+  // рисуем в настоящую ширину: в viewBox 720 на телефоне подписи сжимались до 5px
+  const W = Math.max(300, Math.round($("days").clientWidth)), H = W < 500 ? 180 : 220, L = 26, B = 22, T = 6, n = D.days.length, top = Math.ceil((Math.max(4, ...D.days.map((d) => d.good + d.rej + d.wait + d.unk)) + 1) / 5) * 5;
   const bw = (W - L) / n, y = (v) => T + (H - T - B) * (1 - v / top);
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Applications per day">`;
   for (let g = 0; g <= top; g += 5) s += `<line x1="${L}" x2="${W}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)"/><text x="${L - 6}" y="${y(g) + 4}" text-anchor="end">${g}</text>`;
   D.days.forEach((d, i) => { let a = 0; const x = L + i * bw + 1, w = Math.max(2, bw - 3);
     [["rej", d.rej], ["acc", d.good], ["wait", d.wait], ["unk", d.unk]].forEach(([c, v]) => { if (!v) return; const y1 = y(a + v); s += `<rect x="${x}" y="${y1 + 1}" width="${w}" height="${Math.max(1, y(a) - y1 - 2)}" rx="2" fill="var(--${c})"><title>${d.day}: ${v}</title></rect>`; a += v; });
-    if (i % 7 === 0) s += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${new Date(d.day).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}</text>`; });
+    if (i % (W < 500 ? 14 : 7) === 0) s += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${new Date(d.day).toLocaleDateString("en-GB", {day: "numeric", month: "short"})}</text>`; });
   $("days").innerHTML = s + "</svg>";
   // AUC
   const hs = D.model.hist;
   if (hs.length > 1) {
-    const R = 96, x = (i) => L + (W - L - R) * i / (hs.length - 1), ya = (v) => T + (H - T - B) * (1 - (v - 0.2) / 0.7);
+    const R = 128, x = (i) => L + (W - L - R) * i / (hs.length - 1), ya = (v) => T + (H - T - 8) * (1 - (v - 0.2) / 0.7);
     let a = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="AUC of Claude's score and the small model">`;
     [0.3, 0.5, 0.7, 0.9].forEach((g) => a += `<line x1="${L}" x2="${W - R}" y1="${ya(g)}" y2="${ya(g)}" stroke="${g === 0.5 ? "var(--t3)" : "var(--line)"}" ${g === 0.5 ? 'stroke-dasharray="4 4"' : ""}/><text x="${L - 6}" y="${ya(g) + 4}" text-anchor="end">${g}</text>`);
-    a += `<text x="${W - R + 8}" y="${ya(0.5) + 4}">coin flip</text>`;
-    [["opus", "var(--wait)", "Claude"], ["cv", "var(--acc)", "small model"]].forEach(([key, c, name]) => { const l = hs[hs.length - 1];
-      a += `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" points="${hs.map((h, i) => x(i) + "," + ya(h[key])).join(" ")}"/><circle cx="${x(hs.length - 1)}" cy="${ya(l[key])}" r="4" fill="${c}" stroke="var(--s1)" stroke-width="2"/><text x="${W - R + 8}" y="${ya(l[key]) + 4}" style="fill:var(--t1)">${name} ${l[key]}</text>`; });
+    a += `<text x="${L + 6}" y="${ya(0.5) - 6}">coin flip</text>`;
+    const l = hs[hs.length - 1], S = [["opus", "var(--wait)", "Claude"], ["cv", "var(--acc)", "small model"]];
+    const ly = S.map(([key]) => ya(l[key])), [lo, hi] = ly[0] > ly[1] ? [0, 1] : [1, 0];
+    if (ly[lo] - ly[hi] < 16) { const mid = (ly[lo] + ly[hi]) / 2; ly[lo] = mid + 8; ly[hi] = mid - 8; }  // близкие значения: подписи не налезают
+    S.forEach(([key, c, name], j) => {
+      a += `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" points="${hs.map((h, i) => x(i) + "," + ya(h[key])).join(" ")}"/><circle cx="${x(hs.length - 1)}" cy="${ya(l[key])}" r="4" fill="${c}" stroke="var(--s1)" stroke-width="2"/><text x="${W - R + 10}" y="${ly[j] + 4}" style="fill:var(--t1)">${name} ${l[key]}</text>`; });
     $("auc").innerHTML = a + "</svg>";
   }
   // воронка
@@ -151,7 +155,9 @@ function draw(D) {
   $("roles").innerHTML = `<tr><th>Role type</th><th>applied</th><th>invited</th><th>95% interval</th><th></th></tr>` + D.roles.map((r) => `<tr><td>${r.label}</td><td class="n">${r.n}</td><td class="n" style="color:var(--acc)">${r.good}</td><td class="n" style="color:var(--t3)">${r.known ? Math.round(r.ci[0] * 100) + "–" + Math.round(r.ci[1] * 100) + "%" : "n/a"}</td><td style="width:26%"><div class="bar">${[["rej", r.rej], ["acc", r.good], ["wait", r.wait], ["unk", r.unk]].filter((q) => q[1]).map(([c, v]) => `<i style="flex:${v};background:var(--${c})"></i>`).join("")}</div></td></tr>`).join("");
   $("li").innerHTML = `<tr><th>Why a LinkedIn posting was skipped</th><th>postings</th></tr>` + D.li.why.map(([w, v]) => `<tr><td>${w}</td><td class="n">${v}</td></tr>`).join("");
 }
-fetch("data.json?" + Date.now()).then((r) => r.json()).then(draw).catch(() => { $("ago").textContent = "Could not load the logs"; });
+let last, rt;
+addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => last && draw(last), 150); });
+fetch("data.json?" + Date.now()).then((r) => r.json()).then((D) => draw(last = D)).catch(() => { $("ago").textContent = "Could not load the logs"; });
 </script>
 </body>
 </html>
