@@ -247,6 +247,8 @@ footer{margin-top:32px;font-size:13px;color:var(--t3)}
 <footer>Updated <span id="at">…</span>. Built with Python, Claude and a lot of rejected applications.</footer>
 </main>
 <script>
+// счётчик заходов: шлём только адрес, откуда пришли
+navigator.sendBeacon?.("https://rabota-watch.7vy7m8srtf.workers.dev/hit", document.referrer);
 const $ = (id) => document.getElementById(id);
 const pct = (k, n) => n ? Math.round(100 * k / n) + "%" : "n/a";
 const date = (d) => new Date(d).toLocaleDateString("en-GB", {day: "numeric", month: "short"});
